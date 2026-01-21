@@ -20,6 +20,21 @@
 
         }
 
+        public function getAllConfig()
+        {
+            return $this->config;
+        }
+
+        public function getConfigItem(string $key)
+        {
+            if (isset($this->config[$key]))
+            {
+                return $this->config[$key];
+            }
+
+            return null;
+        }
+
         public function init(): void
         {
             $postManager = new PostManager();

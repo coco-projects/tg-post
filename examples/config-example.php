@@ -6,6 +6,7 @@
          * 基础常用配置
          */
         'webId'            => 10500,
+        'wpUrl'            => 'http://dev6080',
 
         'bootToken'        => '6026300000:AAGvMcaxTRBbcPxs_ShGu-G4CffyCyI_6Ek',
         'apiId'            => 23130000,
