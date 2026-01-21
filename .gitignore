@@ -1,0 +1,7 @@
+/_backups/
+/data/
+/config.php
+/vendor/
+/.build/
+/.phpstan.txt
+/nohup.out
