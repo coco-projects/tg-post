@@ -37,6 +37,26 @@
          * -----------------------------------------------------
          *
          */
+        public function getBootToken(): string
+        {
+            return $this->proxy->postManager->tgMedia->getBootToken();
+        }
+
+        public function restartTelegramBotApi()
+        {
+            $this->proxy->postManager->tgMedia->restartTelegramBotApi();
+            sleep(2);
+            $this->proxy->postManager->tgMedia->updateWebHook();
+
+            return true;
+        }
+
+        public function stopTelegramBotApi()
+        {
+            $this->proxy->postManager->tgMedia->stopTelegramBotApi();
+
+            return true;
+        }
 
         public function create4MediasTable(): void
         {
@@ -63,35 +83,12 @@
             $this->proxy->postManager->tgMedia->deleteEmptyPost();
         }
 
-        public function getBootToken(): string
-        {
-            return $this->proxy->postManager->tgMedia->getBootToken();
-        }
-
-        public function restartTelegramBotApi()
-        {
-            $this->proxy->postManager->tgMedia->restartTelegramBotApi();
-            sleep(2);
-            $this->proxy->postManager->tgMedia->updateWebHook();
-
-            return true;
-        }
-
-        public function stopTelegramBotApi()
-        {
-            $this->proxy->postManager->tgMedia->stopTelegramBotApi();
-
-            return true;
-        }
-
 
         public function startTelegramMediaDownloadDaemons()
         {
             $this->telegramLaunchers[static::scanAndDownload]->launch();
             $this->telegramLaunchers[static::scanAndMoveFile]->launch();
             $this->telegramLaunchers[static::scanAndMirgrateMediaToDb]->launch();
-
-            return true;
         }
 
         public function stopTelegramMediaDownloadDaemons()
@@ -99,36 +96,174 @@
             $this->proxy->postManager->tgMedia->stopDownloadMedia();
             $this->proxy->postManager->tgMedia->stopFileMove();
             $this->proxy->postManager->tgMedia->stopMigration();
-
-            return true;
         }
 
-        public function startTelegramMediaProcessDaemons()
+
+        public function launchTelegramMediaProcessDaemons()
         {
-            $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(true);
-            $this->telegramLaunchers[static::listenConvertM3u8]->launch();
-
-            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(true);
-            $this->telegramLaunchers[static::listenMakeVideoCover]->launch();
-
-            return true;
+            $this->launchListenConvertM3u8Daemon();
+            $this->launchListenMakeVideoCoverDaemon();
         }
 
         public function stopTelegramMediaProcessDaemons()
         {
-            $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(false);
-            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(false);
-
-            return true;
+            $this->stopListenConvertM3u8Daemon();
+            $this->stopListenMakeVideoCoverDaemon();
         }
 
         public function resetTelegramMediaProcessDaemons()
         {
-            $this->proxy->postManager->tgMedia->convertM3u8Queue->reset();
-            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->reset();
-
-            return true;
+            $this->resetListenConvertM3u8Daemon();
+            $this->resetListenMakeVideoCoverDaemon();
         }
+
+        public function restoreTelegramMediaProcessDaemons()
+        {
+            $this->restoreListenConvertM3u8Daemon();
+            $this->restoreListenMakeVideoCoverDaemon();
+        }
+
+
+        public function launchListenConvertM3u8Daemon()
+        {
+            $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(true);
+            $this->telegramLaunchers[static::listenConvertM3u8]->launch();
+        }
+
+        public function stopListenConvertM3u8Daemon()
+        {
+            $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(false);
+        }
+
+        public function resetListenConvertM3u8Daemon()
+        {
+            $this->proxy->postManager->tgMedia->convertM3u8Queue->reset();
+        }
+
+        public function restoreListenConvertM3u8Daemon()
+        {
+            $this->proxy->postManager->tgMedia->convertM3u8Queue->restoreErrorMission();
+            $this->proxy->postManager->tgMedia->convertM3u8Queue->restoreTimesReachedMission();
+        }
+
+        public function makeListenConvertM3u8Mission()
+        {
+            $fileTab = $this->proxy->postManager->tgMedia->getFileTable();
+            $files   = $fileTab->tableIns()->where($fileTab->getMimeTypeField(), 'like', 'video%')->select();
+
+            foreach ($files as $k => $videoFileInfo)
+            {
+                $videoPath     = $videoFileInfo[$fileTab->getPathField()];
+                $saveCoverPath = strtr($videoPath, ["videos" => "photos"]);
+                $saveCoverPath = preg_replace('/[^.]+$/im', 'jpg', $saveCoverPath);
+
+                //先查一下，这个图片生成过没有，生成过就跳过
+                $isExists = $fileTab->tableIns()->where($fileTab->getPathField(), '=', $saveCoverPath)
+                    ->where($fileTab->getFileNameField(), '=', '--cover--')->find();
+
+                if (!$isExists)
+                {
+                    $this->proxy->postManager->tgMedia->makeVideoCoverToQueue($videoFileInfo, function($path) {
+                        return implode('', [
+                            $this->proxy->postManager->tgMedia->telegramMediaStorePath,
+                            '/',
+                            $path,
+                        ]);
+                    });
+                }
+            }
+        }
+
+
+        public function launchListenMakeVideoCoverDaemon()
+        {
+            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(true);
+            $this->telegramLaunchers[static::listenMakeVideoCover]->launch();
+        }
+
+        public function stopListenMakeVideoCoverDaemon()
+        {
+            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(false);
+        }
+
+        public function resetListenMakeVideoCoverDaemon()
+        {
+            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->reset();
+        }
+
+        public function restoreListenMakeVideoCoverDaemon()
+        {
+            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->restoreErrorMission();
+            $this->proxy->postManager->tgMedia->makeVideoCoverQueue->restoreTimesReachedMission();
+        }
+
+        public function makeListenMakeVideoCoverMission()
+        {
+            $fileTab = $this->proxy->postManager->tgMedia->getFileTable();
+            $files   = $fileTab->tableIns()->where($fileTab->getMimeTypeField(), 'like', 'video%')->select();
+
+            foreach ($files as $k => $videoFileInfo)
+            {
+                $this->proxy->postManager->tgMedia->convertM3u8ToQueue($videoFileInfo, function($path) {
+                    return implode('', [
+                        $this->proxy->postManager->tgMedia->telegramMediaStorePath,
+                        '/',
+                        $path,
+                    ]);
+                });
+            }
+        }
+
+        public function delType(int $groupId): array
+        {
+            $this->proxy->postManager->tgMedia->delType($groupId);
+
+            $array = [
+                "code" => 1,
+                "msg"  => '删除成功',
+            ];
+
+            return $array;
+        }
+
+        public function addType(string $name, int $groupId): array
+        {
+            $res = $this->proxy->postManager->tgMedia->addType($name, $groupId);
+
+            $array = [];
+            if ($res == -2)
+            {
+                $array = [
+                    "code" => 0,
+                    "msg"  => '表都没创建',
+                ];
+            }
+            if ($res == -1)
+            {
+                $array = [
+                    "code" => 0,
+                    "msg"  => 'group_id 已经存在',
+                ];
+            }
+            if ($res == 0)
+            {
+                $array = [
+                    "code" => 0,
+                    "msg"  => '写入失败',
+                ];
+            }
+
+            if ($res == 1)
+            {
+                $array = [
+                    "code" => 1,
+                    "msg"  => '写入成功',
+                ];
+            }
+
+            return $array;
+        }
+
 
         public function getServerStatus()
         {
@@ -192,56 +327,7 @@
                 }
             }
 
-            echo json_encode($result, 256);
-        }
-
-        public function delType(int $groupId): bool
-        {
-            $this->proxy->postManager->tgMedia->delType($groupId);
-
-            $array = [
-                "code" => 1,
-                "msg"  => '删除成功',
-            ];
-
-            echo json_encode($array, 1);
-        }
-
-        public function addType(string $name, int $groupId): int
-        {
-            $res = $this->proxy->postManager->tgMedia->addType($name, $groupId);
-
-            $array = [];
-            if ($res == -2)
-            {
-                $array = [
-                    "code" => 0,
-                    "msg"  => '表都没创建',
-                ];
-            }
-            if ($res == -1)
-            {
-                $array = [
-                    "code" => 0,
-                    "msg"  => 'group_id 已经存在',
-                ];
-            }
-            if ($res == 0)
-            {
-                $array = [
-                    "code" => 0,
-                    "msg"  => '写入失败',
-                ];
-            }
-
-            if ($res == 1)
-            {
-                $array = [
-                    "code" => 1,
-                    "msg"  => '写入成功',
-                ];
-            }
-            echo json_encode($array, 1);
+            return $result;
         }
 
 
@@ -255,7 +341,9 @@
         public function deleteMediasRedisLog(): void
         {
             $this->proxy->postManager->tgMedia->deleteRedisLog();
-            if ($this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect())
+            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+
+            if ($isWPConneted)
             {
                 $this->proxy->getWpPost()->wpManager->deleteRedisLog();
                 $this->proxy->getWpPost()->wpManager->deleteTransient();
@@ -266,6 +354,68 @@
         {
             $this->proxy->getWpPost()->wpManager->deleteTransient();
             $this->proxy->getWpPost()->wpManager->deleteAllPost();
+        }
+
+        public function deleteWpPostByKeyword(string $keyword, bool $isFullMatch = false): array
+        {
+            $isFullMatch = trim($isFullMatch);
+            $keyword     = trim($keyword);
+
+            if (!$keyword)
+            {
+                $array = [
+                    "code" => 1,
+                    "msg"  => '关键词不能为空',
+                ];
+
+                return $array;
+            }
+
+            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            if ($isWPConneted)
+            {
+                $array = [
+                    "code" => 1,
+                    "msg"  => '执行成功',
+                ];
+
+                $this->proxy->getWpPost()->wpManager->deletePostByKeyword($keyword, false, $isFullMatch);
+            }
+            else
+            {
+                $array = [
+                    "code" => 1,
+                    "msg"  => 'wp 未连接上',
+                ];
+            }
+
+            return $array;
+        }
+
+        public function deleteMediaPostByKeyword(string $keyword, bool $isFullMatch = false): array
+        {
+            $isFullMatch = trim($isFullMatch);
+            $keyword     = trim($keyword);
+
+            if (!$keyword)
+            {
+                $array = [
+                    "code" => 1,
+                    "msg"  => '关键词不能为空',
+                ];
+
+                return $array;
+            }
+
+            $array = [
+                "code" => 1,
+                "msg"  => '执行成功',
+            ];
+
+            $this->proxy->postManager->tgMedia->deletePostByKeyword($keyword, $isFullMatch);
+
+            return $array;
+
         }
 
         public function updateAllPostView(): void
@@ -309,14 +459,13 @@
 
         public function makeUpdateLockKey(): string
         {
-            return 'wordpress' . $this->config['webId'] . '_update_lock';
+            return 'wp_' . $this->config['webId'] . '_update_lock';
         }
 
 
-
-        public function form_wp_init(): void
+        public function form_wp_init()
         {
-            $isWPConneted = $this->proxy->wpManager->getMysqlClient()->testDbConnect();
+            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
 
             if ($isWPConneted)
             {
@@ -345,47 +494,8 @@
                     "msg"  => 'wp数据库未连接',
                 ];
             }
-            echo json_encode($array, 1);
-        }
 
-        public function form_delete_post(): void
-        {
-            $jsonConfig = $this->getConfigFileJson();
-            $this->initProxy($jsonConfig);
-            $data = [];
-
-            foreach ($_POST as $k => $v)
-            {
-                $data[$k] = trim($v);
-            }
-
-            $isFullMatch = $data['isFullMatch'] ?? false;
-            $keyword     = $data['keyword'] ?? '';
-
-            if (!$keyword)
-            {
-                $array = [
-                    "code" => 1,
-                    "msg"  => '关键词不能为空',
-                ];
-                echo json_encode($array, 1);
-                exit();
-            }
-
-            $array = [
-                "code" => 1,
-                "msg"  => '执行成功',
-            ];
-
-            $this->proxy->tgDownloaderManager->deletePostByKeyword($keyword, $isFullMatch);
-
-            $isWPConneted = $this->proxy->wpManager->getMysqlClient()->testDbConnect();
-            if ($isWPConneted)
-            {
-                $this->proxy->wpManager->deletePostByKeyword($keyword, false, false);
-            }
-
-            echo json_encode($array, 1);
+            return json_encode($array, 1);
         }
 
     }
