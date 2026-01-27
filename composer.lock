@@ -179,16 +179,16 @@
         },
         {
             "name": "coco-project/command-runner",
-            "version": "v1.0.17",
+            "version": "v1.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/command-runner.git",
-                "reference": "d7a6c541bdd9e11a78bae39d85cb06a6aeb410d6"
+                "reference": "adb43bf08cb443e5aa797f4c161b629c4e4f2f42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/command-runner/zipball/d7a6c541bdd9e11a78bae39d85cb06a6aeb410d6",
-                "reference": "d7a6c541bdd9e11a78bae39d85cb06a6aeb410d6",
+                "url": "https://api.github.com/repos/coco-projects/command-runner/zipball/adb43bf08cb443e5aa797f4c161b629c4e4f2f42",
+                "reference": "adb43bf08cb443e5aa797f4c161b629c4e4f2f42",
                 "shasum": ""
             },
             "require": {
@@ -214,9 +214,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/command-runner/issues",
-                "source": "https://github.com/coco-projects/command-runner/tree/v1.0.17"
+                "source": "https://github.com/coco-projects/command-runner/tree/v1.0.18"
             },
-            "time": "2024-12-18T12:43:53+00:00"
+            "time": "2026-01-27T09:36:23+00:00"
         },
         {
             "name": "coco-project/html-builder",
@@ -646,16 +646,16 @@
         },
         {
             "name": "coco-project/tg-media",
-            "version": "v1.0.11",
+            "version": "v1.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/tg-media.git",
-                "reference": "d5f896cf08bdccd1e22b85459aa497d20b6db8b7"
+                "reference": "771a17daa913fa5d13740baed3a5cc65a7458074"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/tg-media/zipball/d5f896cf08bdccd1e22b85459aa497d20b6db8b7",
-                "reference": "d5f896cf08bdccd1e22b85459aa497d20b6db8b7",
+                "url": "https://api.github.com/repos/coco-projects/tg-media/zipball/771a17daa913fa5d13740baed3a5cc65a7458074",
+                "reference": "771a17daa913fa5d13740baed3a5cc65a7458074",
                 "shasum": ""
             },
             "require": {
@@ -685,9 +685,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/tg-media/issues",
-                "source": "https://github.com/coco-projects/tg-media/tree/v1.0.11"
+                "source": "https://github.com/coco-projects/tg-media/tree/v1.0.12"
             },
-            "time": "2026-01-27T07:08:32+00:00"
+            "time": "2026-01-27T09:39:54+00:00"
         },
         {
             "name": "coco-project/timer",
