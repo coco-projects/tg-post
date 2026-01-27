@@ -5555,7 +5555,7 @@ https://t.me/DrDrochilnya_bot?start=_JCXCEPXYXSXYUAT',
                 ],
             ];
 
-//            $posts = $this->postManager->tgMedia->getPostByContinuePostId($lastPost);
+            $posts = $this->postManager->tgMedia->getPostByContinuePostId($lastPost);
 
             foreach ($posts as $postId => $post)
             {

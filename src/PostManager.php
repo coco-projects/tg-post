@@ -44,11 +44,6 @@
             $this->container = new Container();
         }
 
-        public function initLaunchers()
-        {
-
-        }
-
         public function initMediaManager(callable $callback): static
         {
             $this->initRedis();

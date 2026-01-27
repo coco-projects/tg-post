@@ -6,5 +6,5 @@
 //    $token = $app->getBotToken();
 //    var_export($token);
 
-    $app->createTgMediaTables();
+    $app->create4MediasTable(false);
 

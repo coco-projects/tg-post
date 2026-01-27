@@ -37,30 +37,31 @@
          * -----------------------------------------------------
          *
          */
-        public function getBootToken(): string
+        public function getBotToken(): string
         {
             return $this->proxy->postManager->tgMedia->getBootToken();
         }
 
-        public function restartTelegramBotApi()
+        public function restartTelegramBotApiAndUpdateWebHook(): void
+        {
+            $this->restartTelegramBotApi();
+            sleep(2);
+            $this->updateTelegramWebhook();
+        }
+
+        public function restartTelegramBotApi(): void
         {
             $this->proxy->postManager->tgMedia->restartTelegramBotApi();
-            sleep(2);
-            $this->proxy->postManager->tgMedia->updateWebHook();
-
-            return true;
         }
 
-        public function stopTelegramBotApi()
+        public function stopTelegramBotApi(): void
         {
             $this->proxy->postManager->tgMedia->stopTelegramBotApi();
-
-            return true;
         }
 
-        public function create4MediasTable(): void
+        public function create4MediasTable(bool $forceCreateTable = false): void
         {
-            $this->proxy->postManager->tgMedia->getMysqlClient()->createAllTable(true);
+            $this->proxy->postManager->tgMedia->getMysqlClient()->createAllTable($forceCreateTable);
         }
 
         public function deleteMediasCache(): void
@@ -84,14 +85,14 @@
         }
 
 
-        public function startTelegramMediaDownloadDaemons()
+        public function startTelegramMediaDownloadDaemons(): void
         {
             $this->telegramLaunchers[static::scanAndDownload]->launch();
             $this->telegramLaunchers[static::scanAndMoveFile]->launch();
             $this->telegramLaunchers[static::scanAndMirgrateMediaToDb]->launch();
         }
 
-        public function stopTelegramMediaDownloadDaemons()
+        public function stopTelegramMediaDownloadDaemons(): void
         {
             $this->proxy->postManager->tgMedia->stopDownloadMedia();
             $this->proxy->postManager->tgMedia->stopFileMove();
@@ -99,54 +100,54 @@
         }
 
 
-        public function launchTelegramMediaProcessDaemons()
+        public function launchTelegramMediaProcessDaemons(): void
         {
             $this->launchListenConvertM3u8Daemon();
             $this->launchListenMakeVideoCoverDaemon();
         }
 
-        public function stopTelegramMediaProcessDaemons()
+        public function stopTelegramMediaProcessDaemons(): void
         {
             $this->stopListenConvertM3u8Daemon();
             $this->stopListenMakeVideoCoverDaemon();
         }
 
-        public function resetTelegramMediaProcessDaemons()
+        public function resetTelegramMediaProcessDaemons(): void
         {
             $this->resetListenConvertM3u8Daemon();
             $this->resetListenMakeVideoCoverDaemon();
         }
 
-        public function restoreTelegramMediaProcessDaemons()
+        public function restoreTelegramMediaProcessDaemons(): void
         {
             $this->restoreListenConvertM3u8Daemon();
             $this->restoreListenMakeVideoCoverDaemon();
         }
 
 
-        public function launchListenConvertM3u8Daemon()
+        public function launchListenConvertM3u8Daemon(): void
         {
             $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(true);
             $this->telegramLaunchers[static::listenConvertM3u8]->launch();
         }
 
-        public function stopListenConvertM3u8Daemon()
+        public function stopListenConvertM3u8Daemon(): void
         {
             $this->proxy->postManager->tgMedia->convertM3u8Queue->setEnable(false);
         }
 
-        public function resetListenConvertM3u8Daemon()
+        public function resetListenConvertM3u8Daemon(): void
         {
             $this->proxy->postManager->tgMedia->convertM3u8Queue->reset();
         }
 
-        public function restoreListenConvertM3u8Daemon()
+        public function restoreListenConvertM3u8Daemon(): void
         {
             $this->proxy->postManager->tgMedia->convertM3u8Queue->restoreErrorMission();
             $this->proxy->postManager->tgMedia->convertM3u8Queue->restoreTimesReachedMission();
         }
 
-        public function makeListenConvertM3u8Mission()
+        public function makeListenConvertM3u8Mission(): void
         {
             $fileTab = $this->proxy->postManager->tgMedia->getFileTable();
             $files   = $fileTab->tableIns()->where($fileTab->getMimeTypeField(), 'like', 'video%')->select();
@@ -175,29 +176,29 @@
         }
 
 
-        public function launchListenMakeVideoCoverDaemon()
+        public function launchListenMakeVideoCoverDaemon(): void
         {
             $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(true);
             $this->telegramLaunchers[static::listenMakeVideoCover]->launch();
         }
 
-        public function stopListenMakeVideoCoverDaemon()
+        public function stopListenMakeVideoCoverDaemon(): void
         {
             $this->proxy->postManager->tgMedia->makeVideoCoverQueue->setEnable(false);
         }
 
-        public function resetListenMakeVideoCoverDaemon()
+        public function resetListenMakeVideoCoverDaemon(): void
         {
             $this->proxy->postManager->tgMedia->makeVideoCoverQueue->reset();
         }
 
-        public function restoreListenMakeVideoCoverDaemon()
+        public function restoreListenMakeVideoCoverDaemon(): void
         {
             $this->proxy->postManager->tgMedia->makeVideoCoverQueue->restoreErrorMission();
             $this->proxy->postManager->tgMedia->makeVideoCoverQueue->restoreTimesReachedMission();
         }
 
-        public function makeListenMakeVideoCoverMission()
+        public function makeListenMakeVideoCoverMission(): void
         {
             $fileTab = $this->proxy->postManager->tgMedia->getFileTable();
             $files   = $fileTab->tableIns()->where($fileTab->getMimeTypeField(), 'like', 'video%')->select();
@@ -265,7 +266,7 @@
         }
 
 
-        public function getServerStatus()
+        public function getServerStatus(): array
         {
             $telegram_server_status = (int)$this->proxy->postManager->tgMedia->isTelegramBotApiStarted();
 
@@ -318,10 +319,10 @@
             {
                 switch ($v['name'])
                 {
-                    case static::listenMakeVideoCover:
+                    case $this->proxy->postManager->tgMedia::MAKE_VIDEO_COVER_QUEUE :
                         $v['zh_name'] = '视频抽图';
                         break;
-                    case static::listenConvertM3u8:
+                    case $this->proxy->postManager->tgMedia::CONVERT_M3U8_QUEUE :
                         $v['zh_name'] = '视频转码';
                         break;
                 }
@@ -447,6 +448,44 @@
             return $postCount - $detailPageCount;
         }
 
+        public function wpReplace(string $wpInitString): bool
+        {
+            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+
+            if ($isWPConneted)
+            {
+                $array = static::parseStringToAssociativeArray($wpInitString);
+
+                $this->proxy->getWpPost()->wpManager->replaceAll($array);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        protected static function parseStringToAssociativeArray($input): array
+        {
+            $lines  = preg_split("#[\r\n]+#iu", $input, -1, PREG_SPLIT_NO_EMPTY);
+            $result = [];
+
+            foreach ($lines as $line)
+            {
+                $line = trim($line); // 去掉行首尾的空白字符
+
+                $parts = explode("|", $line);
+                if (count($parts) == 2)
+                {
+                    // 将两部分添加到结果数组
+                    $result[trim($parts[0])] = trim($parts[1]);
+                }
+            }
+
+            return $result;
+        }
+
         public function fullySyncWpPost(): void
         {
             (new PhpLauncher($this->runtimeDir . 'daemon/01-fullySyncWpPost.php'))->launch();
@@ -462,40 +501,5 @@
             return 'wp_' . $this->config['webId'] . '_update_lock';
         }
 
-
-        public function form_wp_init()
-        {
-            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
-
-            if ($isWPConneted)
-            {
-                $data = [];
-                foreach ($_POST as $k => $v)
-                {
-                    $data[$k] = trim($v);
-                }
-
-                $array = static::parseStringToAssociativeArray($data['wp_init']);
-
-                $jsonConfig = $this->getConfigFileJson();
-                $this->initProxy($jsonConfig);
-
-                $this->proxy->wpManager->replaceAll($array);
-
-                $array = [
-                    "code" => 1,
-                    "msg"  => '执行成功',
-                ];
-            }
-            else
-            {
-                $array = [
-                    "code" => 1,
-                    "msg"  => 'wp数据库未连接',
-                ];
-            }
-
-            return json_encode($array, 1);
-        }
 
     }
