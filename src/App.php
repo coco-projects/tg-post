@@ -488,18 +488,26 @@
 
         public function fullySyncWpPost(): void
         {
-            (new PhpLauncher($this->runtimeDir . 'daemon/01-fullySyncWpPost.php'))->launch();
+            (new PhpLauncher($this->runtimeDir . 'func/01-fullySyncWpPost.php'))->launch();
         }
 
         public function insertOnlyWpPost(): void
         {
-            (new PhpLauncher($this->runtimeDir . 'daemon/02-insertOnlyWpPost.php'))->launch();
+            (new PhpLauncher($this->runtimeDir . 'func/02-insertOnlyWpPost.php'))->launch();
         }
 
-        public function makeUpdateLockKey(): string
+        public function fullySyncTelegramPost(): void
         {
-            return 'wp_' . $this->config['webId'] . '_update_lock';
+            (new PhpLauncher($this->runtimeDir . 'func/11-fullySyncTelegramPost.php'))->launch();
         }
 
+        public function makeWpUpdateLockKey(): string
+        {
+            return 'update_lock_' . $this->config['webId'] . '_wp';
+        }
 
+        public function makeTelegramUpdateLockKey(): string
+        {
+            return 'update_lock_' . $this->config['webId'] . '_telegram';
+        }
     }
