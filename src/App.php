@@ -498,7 +498,7 @@
 
         public function fullySyncTelegramPost(): void
         {
-            (new PhpLauncher($this->runtimeDir . 'func/11-fullySyncTelegramPost.php'))->launch();
+            (new PhpLauncher($this->runtimeDir . 'func/11-insertOnlyTelegramPost.php'))->launch();
         }
 
         public function makeWpUpdateLockKey(): string
