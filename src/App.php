@@ -286,12 +286,13 @@
 
             $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
 
-            $result['wp_connected']            = $isWPConneted;
-            $result['type_list']               = $type_list;
-            $result['is_all_table_created']    = $is_all_table_created;
-            $result['table_status']            = $table_status;
-            $result['need_update_pages_count'] = $this->needCreateDetailPageCount();
-            $result['telegram_server_status']  = $telegram_server_status;
+            $result['wp_connected']                           = $isWPConneted;
+            $result['type_list']                              = $type_list;
+            $result['is_all_table_created']                   = $is_all_table_created;
+            $result['table_status']                           = $table_status;
+            $result['need_update_pages_count_wp']             = $this->needCreateDetailPageCountWp();
+            $result['need_create_detail_page_count_telegram'] = $this->needCreateDetailPageCountTelegram();
+            $result['telegram_server_status']                 = $telegram_server_status;
 
             $result['telegram_server_info'] = $telegram_server_status ? $this->proxy->postManager->tgMedia->getTelegramApiInfo() : [];
             $result['get_me']               = $telegram_server_status ? $this->proxy->postManager->tgMedia->getMe() : [];
