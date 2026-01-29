@@ -429,7 +429,7 @@
             $this->proxy->getWpPost()->wpManager->updateAllPostPublishTime('2021-5-5', date('Y-m-d'), 300);
         }
 
-        public function needCreateDetailPageCount(): int
+        public function needCreateDetailPageCountWp(): int
         {
             $postTab   = $this->proxy->postManager->tgMedia->getPostTable();
             $a         = $postTab->isTableCerated();
@@ -446,6 +446,24 @@
             ])->count() : 0;
 
             return $postCount - $detailPageCount;
+        }
+
+        public function needCreateDetailPageCountTelegram(): int
+        {
+            $lastPost = $this->proxy->getTelegramPost()->getContinuePostId() ?? 0;
+
+            $postTable = $this->proxy->getTelegramPost()->postManager->tgMedia->getPostTable();
+
+            $postWhere   = [];
+            $postWhere[] = [
+                $postTable->getPkField(),
+                '>',
+                $lastPost,
+            ];
+
+            $count = $postTable->tableIns()->where($postWhere)->count();
+
+            return $count;
         }
 
         public function wpReplace(string $wpInitString): bool

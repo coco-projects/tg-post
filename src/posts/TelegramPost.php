@@ -5681,7 +5681,7 @@ https://t.me/DrDrochilnya_bot?start=_JCXCEPXYXSXYUAT',
             file_put_contents($file, $postId);
         }
 
-        private function getContinuePostId(): bool|string|null
+        public function getContinuePostId(): bool|string|null
         {
             $file = $this->makeContinuePostIdFileName();
 
