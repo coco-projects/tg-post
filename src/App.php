@@ -266,6 +266,36 @@
         }
 
 
+        public function isMediasTablesOK()
+        {
+            $table_status           = $this->proxy->postManager->tgMedia->getAllTableStatus();
+            $isAllMediaTableCreated = true;
+            foreach ($table_status as $k => $v)
+            {
+                if (!$v['is_created'])
+                {
+                    $isAllMediaTableCreated = false;
+                    break;
+                }
+            }
+
+            return $isAllMediaTableCreated;
+        }
+
+        public function isWpTablesOK()
+        {
+            try
+            {
+                $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            }
+            catch (\Exception $e)
+            {
+                $isWPConneted = false;
+            }
+
+            return $isWPConneted;
+        }
+
         public function getServerStatus(): array
         {
             $telegram_server_status = (int)$this->proxy->postManager->tgMedia->isTelegramBotApiStarted();
@@ -274,24 +304,15 @@
 
             $table_status = $this->proxy->postManager->tgMedia->getAllTableStatus();
 
-            $is_all_table_created = true;
-            foreach ($table_status as $k => $v)
-            {
-                if (!$v['is_created'])
-                {
-                    $is_all_table_created = false;
-                    break;
-                }
-            }
-
-            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            $isAllMediaTableCreated = $this->isMediasTablesOK();
+            $isWPConneted           = $this->isWpTablesOK();
 
             $result['wp_connected']                           = $isWPConneted;
+            $result['is_all_table_created']                   = $isAllMediaTableCreated;
+            $result['need_update_pages_count_wp']             = $isWPConneted ? $this->needCreateDetailPageCountWp() : 0;
+            $result['need_create_detail_page_count_telegram'] = $isAllMediaTableCreated ? $this->needCreateDetailPageCountTelegram() : 0;
             $result['type_list']                              = $type_list;
-            $result['is_all_table_created']                   = $is_all_table_created;
             $result['table_status']                           = $table_status;
-            $result['need_update_pages_count_wp']             = $this->needCreateDetailPageCountWp();
-            $result['need_create_detail_page_count_telegram'] = $this->needCreateDetailPageCountTelegram();
             $result['telegram_server_status']                 = $telegram_server_status;
 
             $result['telegram_server_info'] = $telegram_server_status ? $this->proxy->postManager->tgMedia->getTelegramApiInfo() : [];
@@ -316,6 +337,7 @@
             ];
 
             $result['queue_status'] = $this->proxy->postManager->tgMedia->getQueueStatus();
+
             foreach ($result['queue_status'] as $k => &$v)
             {
                 switch ($v['name'])
@@ -343,7 +365,7 @@
         public function deleteMediasRedisLog(): void
         {
             $this->proxy->postManager->tgMedia->deleteRedisLog();
-            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            $isWPConneted = $this->isWpTablesOK();
 
             if ($isWPConneted)
             {
@@ -373,7 +395,7 @@
                 return $array;
             }
 
-            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            $isWPConneted = $this->isWpTablesOK();
             if ($isWPConneted)
             {
                 $array = [
@@ -469,7 +491,7 @@
 
         public function wpReplace(string $wpInitString): bool
         {
-            $isWPConneted = $this->proxy->getWpPost()->wpManager->getMysqlClient()->testDbConnect();
+            $isWPConneted = $this->isWpTablesOK();
 
             if ($isWPConneted)
             {
