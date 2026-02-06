@@ -646,16 +646,16 @@
         },
         {
             "name": "coco-project/tg-media",
-            "version": "v1.0.13",
+            "version": "v1.0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/tg-media.git",
-                "reference": "f3bd713a6646ada3d894a6c7751392e3f9bc9b6b"
+                "reference": "e99d5d6fcd785ba9a7d5b955ba5afd9c482ebbbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/tg-media/zipball/f3bd713a6646ada3d894a6c7751392e3f9bc9b6b",
-                "reference": "f3bd713a6646ada3d894a6c7751392e3f9bc9b6b",
+                "url": "https://api.github.com/repos/coco-projects/tg-media/zipball/e99d5d6fcd785ba9a7d5b955ba5afd9c482ebbbc",
+                "reference": "e99d5d6fcd785ba9a7d5b955ba5afd9c482ebbbc",
                 "shasum": ""
             },
             "require": {
@@ -685,9 +685,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/tg-media/issues",
-                "source": "https://github.com/coco-projects/tg-media/tree/v1.0.13"
+                "source": "https://github.com/coco-projects/tg-media/tree/v1.0.14"
             },
-            "time": "2026-02-04T04:21:33+00:00"
+            "time": "2026-02-06T15:09:28+00:00"
         },
         {
             "name": "coco-project/timer",
@@ -1250,27 +1250,27 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.8",
+            "version": "v2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b"
+                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/7581a4407012f5f53365e11bafc520fd7f36bc9b",
-                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/8f631589ab07b7b52fead814965f5a800459cb3e",
+                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.1"
             },
             "require-dev": {
-                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
                 "nesbot/carbon": "^2.67|^3.0",
                 "pestphp/pest": "^2.36|^3.0|^4.0",
                 "phpstan/phpstan": "^2.0",
-                "symfony/var-dumper": "^6.2.0|^7.0.0"
+                "symfony/var-dumper": "^6.2.0|^7.0.0|^8.0.0"
             },
             "type": "library",
             "extra": {
@@ -1307,7 +1307,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-01-08T16:22:46+00:00"
+            "time": "2026-02-03T06:55:34+00:00"
         },
         {
             "name": "matthiasmullie/minify",
