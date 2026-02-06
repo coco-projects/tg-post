@@ -154,24 +154,13 @@
 
             foreach ($files as $k => $videoFileInfo)
             {
-                $videoPath     = $videoFileInfo[$fileTab->getPathField()];
-                $saveCoverPath = strtr($videoPath, ["videos" => "photos"]);
-                $saveCoverPath = preg_replace('/[^.]+$/im', 'jpg', $saveCoverPath);
-
-                //先查一下，这个图片生成过没有，生成过就跳过
-                $isExists = $fileTab->tableIns()->where($fileTab->getPathField(), '=', $saveCoverPath)
-                    ->where($fileTab->getFileNameField(), '=', '--cover--')->find();
-
-                if (!$isExists)
-                {
-                    $this->proxy->postManager->tgMedia->makeVideoCoverToQueue($videoFileInfo, function($path) {
-                        return implode('', [
-                            $this->proxy->postManager->tgMedia->telegramMediaStorePath,
-                            '/',
-                            $path,
-                        ]);
-                    });
-                }
+                $this->proxy->postManager->tgMedia->convertM3u8ToQueue($videoFileInfo, function($path) {
+                    return implode('', [
+                        $this->proxy->postManager->tgMedia->telegramMediaStorePath,
+                        '/',
+                        $path,
+                    ]);
+                });
             }
         }
 
@@ -205,13 +194,24 @@
 
             foreach ($files as $k => $videoFileInfo)
             {
-                $this->proxy->postManager->tgMedia->convertM3u8ToQueue($videoFileInfo, function($path) {
-                    return implode('', [
-                        $this->proxy->postManager->tgMedia->telegramMediaStorePath,
-                        '/',
-                        $path,
-                    ]);
-                });
+                $videoPath     = $videoFileInfo[$fileTab->getPathField()];
+                $saveCoverPath = strtr($videoPath, ["videos" => "photos"]);
+                $saveCoverPath = preg_replace('/[^.]+$/im', 'jpg', $saveCoverPath);
+
+                //先查一下，这个图片生成过没有，生成过就跳过
+                $isExists = $fileTab->tableIns()->where($fileTab->getPathField(), '=', $saveCoverPath)
+                    ->where($fileTab->getFileNameField(), '=', '--cover--')->find();
+
+                if (!$isExists)
+                {
+                    $this->proxy->postManager->tgMedia->makeVideoCoverToQueue($videoFileInfo, function($path) {
+                        return implode('', [
+                            $this->proxy->postManager->tgMedia->telegramMediaStorePath,
+                            '/',
+                            $path,
+                        ]);
+                    });
+                }
             }
         }
 
