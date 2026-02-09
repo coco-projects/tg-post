@@ -61,7 +61,7 @@
             return $this;
         }
 
-        public function updateWpPost(bool $insertOnly = false): void
+        public function updateWpPost(bool $insertOnly = false, $row = 1000): void
         {
             $postTab   = $this->postManager->tgMedia->getPostTable();
             $wpPostTab = $this->wpManager->getPostsTable();
@@ -88,7 +88,7 @@
              *
              * **/
 
-            $posts = $this->postManager->tgMedia->getPostByPostIds($arrs['toInsertWp']);
+            $posts = $this->postManager->tgMedia->getPostByPostIds($arrs['toInsertWp'], row: $row);
 
             $this->logInfo('创建文章个数: ' . count($posts));
             foreach ($posts as $post)
@@ -135,7 +135,7 @@
                  * ------------------------------
                  *
                  * **/
-                $posts = $this->postManager->tgMedia->getPostByPostIds($arrs['toUpdateWp']);
+                $posts = $this->postManager->tgMedia->getPostByPostIds($arrs['toUpdateWp'], row: $row);
 
                 $this->logInfo('更新文章个数: ' . count($posts));
                 foreach ($posts as $post)
