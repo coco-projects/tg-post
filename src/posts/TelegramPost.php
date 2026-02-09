@@ -5661,6 +5661,8 @@ https://t.me/DrDrochilnya_bot?start=_JCXCEPXYXSXYUAT',
 
                 $this->doPost($endPoint, $sendOptions, $successCallback, $errorCallback);
             }
+
+            $this->logInfo( '1000条信息发送完成，最后id：' . $lastPost);
         }
 
         private function waitSeconds(int $seconds): void

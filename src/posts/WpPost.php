@@ -169,6 +169,9 @@
              *
              * **/
             $this->wpManager->updateTagsCount();
+
+            $this->logInfo( '1000条信息处理完成');
+
         }
 
         public function makePostTitle(string $postContent): string
