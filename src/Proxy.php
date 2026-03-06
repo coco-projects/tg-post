@@ -84,14 +84,14 @@
                                 $path = $tgMediaManager->telegramMediaStorePath . '/' . $path;
 
                                 return $path;
-                            });
+                            },$this->config['threads']);
 
                             //转码为m3u8
                             $tgMediaManager->convertM3u8ToQueue($videoFileInfo, function($path) use ($tgMediaManager) {
                                 $path = $tgMediaManager->telegramMediaStorePath . '/' . $path;
 
                                 return $path;
-                            });
+                            },15,$this->config['threads']);
                         }
 
                         /*

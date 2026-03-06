@@ -160,7 +160,7 @@
                         '/',
                         $path,
                     ]);
-                });
+                },15,$this->config['threads']);
             }
         }
 
@@ -210,7 +210,7 @@
                             '/',
                             $path,
                         ]);
-                    });
+                    },$this->config['threads']);
                 }
             }
         }

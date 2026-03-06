@@ -101,6 +101,7 @@
         'redisPort'     => 6379,
         'redisDb'       => 12,
 
+        'threads'       => 4
     ];
 
 
