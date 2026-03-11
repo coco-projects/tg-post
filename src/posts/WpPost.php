@@ -199,11 +199,12 @@
             $wpPostTab = $this->wpManager->getPostsTable();
 
             $contents = [];
+            $advs     = [];
 
             if (is_callable($this->contentsAdv))
             {
                 call_user_func_array($this->contentsAdv, [
-                    &$contents,
+                    &$advs,
                 ]);
             }
 
@@ -325,6 +326,8 @@
                 }
             }
 
+            $isAdvsPushed = false;
+
             foreach ($contentsDocument as $k => $v)
             {
                 $contents[] = $v;
@@ -337,11 +340,22 @@
 
             foreach ($contentsImg as $k => $v)
             {
+                if ($k == 1)
+                {
+                    $contents     = array_merge($contents, $advs);
+                    $isAdvsPushed = true;
+                }
+
                 $contents[] = $v;
             }
 
             foreach ($contentsVideo as $k => $v)
             {
+                if ($k == 1 and !$isAdvsPushed)
+                {
+                    $contents = array_merge($contents, $advs);
+                }
+
                 $contents[] = $v;
             }
 
